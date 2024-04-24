@@ -35,4 +35,7 @@ func main() {
 	fmt.Println("interestRate:", interestRate)
 	fmt.Println("year:", year)
 	fmt.Println("monthlyInstallmemt:", monthlyInstallmemt(price, interestRate, year))
+
+	var numbers = []int{11, 8, 5, 1, 4, 10}
+	fmt.Println("sumOfEven:", sumOfEven(numbers))
 }
