@@ -41,4 +41,7 @@ func main() {
 
 	var numbersArr = [4]int{1, 2, 3, 4}
 	fmt.Println("reverseArray:", reverseArray(numbersArr))
+
+	var numbersSlice = []int{4, 5, 6, 7, 11, 21, 37}
+	fmt.Println("primes:", primes(numbersSlice))
 }
