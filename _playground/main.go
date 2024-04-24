@@ -38,4 +38,7 @@ func main() {
 
 	var numbers = []int{11, 8, 5, 1, 4, 10}
 	fmt.Println("sumOfEven:", sumOfEven(numbers))
+
+	var numbersArr = [4]int{1, 2, 3, 4}
+	fmt.Println("reverseArray:", reverseArray(numbersArr))
 }
