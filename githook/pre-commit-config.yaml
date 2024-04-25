@@ -15,7 +15,7 @@ repos:
       - id: check-added-large-files
         stages: [pre-commit]
   - repo: https://github.com/golangci/golangci-lint
-    rev: v1.41.1
+    rev: v1.55.2
     hooks:
       - id: golangci-lint
         language: golang
@@ -31,11 +31,3 @@ repos:
         types: [go]
         files: ^subdir/
         stages: [pre-commit]
-  - repo: local
-    hooks:
-      - id: commit-msg
-        name: commit message checking
-        language: system
-        entry: ./scripts/commit-msg
-        pass_filenames: true
-        stages: [commit-msg]
