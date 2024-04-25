@@ -1,10 +1,16 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/SupTarr/intensive_go_basic_workshop/_exercises/thai_id"
 )
@@ -23,15 +29,39 @@ type VerifyIdErrorResponse struct {
 
 func main() {
 	slog.SetLogLoggerLevel(slog.LevelDebug)
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+	idleConnsClosed := make(chan struct{})
+	mux := http.NewServeMux()
+	port := os.Getenv("PORT")
 
-	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+	srv := http.Server{
+		Addr:              ":" + port,
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
+
+	slog.Debug("Listening and serving HTTP on :" + port)
+	go func() {
+		<-ctx.Done()
+		fmt.Println("Shutting down...")
+		if err := srv.Shutdown(context.Background()); err != nil {
+			log.Printf("HTTP server Shutdown: %v", err)
+		}
+		close(idleConnsClosed)
+	}()
+	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+		log.Fatalf("HTTP server ListenAndServe: %v", err)
+	}
+
+	mux.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]string{
 			"message": "pong",
 		})
 	})
 
-	http.HandleFunc("/thai/ids/verify", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/thai/ids/verify", func(w http.ResponseWriter, r *http.Request) {
 		var request VerifyIdRequest
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
@@ -59,7 +89,6 @@ func main() {
 		})
 	})
 
-	port := os.Getenv("PORT")
-	slog.Debug("Listening and serving HTTP on :" + port)
-	http.ListenAndServe(":"+port, nil)
+	<-idleConnsClosed
+	fmt.Println("Bye!")
 }
