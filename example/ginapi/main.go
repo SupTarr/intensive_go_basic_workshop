@@ -1,9 +1,12 @@
 package main
 
 import (
+	"database/sql"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/SupTarr/intensive_go_basic_workshop/_exercises/thai_id"
 )
@@ -20,7 +23,17 @@ type VerifyIdErrorResponse struct {
 	Message string `json:"message"`
 }
 
+type ProgrammingLanguage struct {
+	Name     string `json:"name"`
+	ImageUrl string `json:"imageUrl"`
+}
+
 func main() {
+	db, err := sql.Open("sqlite3", "../../languages.sqlite")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -51,6 +64,33 @@ func main() {
 		c.JSON(http.StatusOK, VerifyIdResponse{
 			Valid: true,
 		})
+	})
+
+	r.GET("/languages", func(c *gin.Context) {
+		rows, err := db.Query("SELECT name, imageUrl FROM languages")
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"message": err.Error(),
+			})
+		}
+		defer rows.Close()
+
+		var response []ProgrammingLanguage
+		for rows.Next() {
+			var name, imageUrl string
+			if err := rows.Scan(&name, &imageUrl); err != nil {
+				c.JSON(http.StatusOK, gin.H{
+					"message": err.Error(),
+				})
+			}
+
+			response = append(response, ProgrammingLanguage{
+				Name:     name,
+				ImageUrl: imageUrl,
+			})
+		}
+
+		c.JSON(http.StatusOK, response)
 	})
 
 	r.Run()
