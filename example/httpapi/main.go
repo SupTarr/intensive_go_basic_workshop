@@ -55,6 +55,11 @@ func main() {
 	}
 
 	mux.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+			return
+		}
+
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]string{
 			"message": "pong",
@@ -62,6 +67,11 @@ func main() {
 	})
 
 	mux.HandleFunc("/thai/ids/verify", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+			return
+		}
+
 		var request VerifyIdRequest
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
