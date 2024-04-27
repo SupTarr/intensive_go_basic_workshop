@@ -12,7 +12,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/SupTarr/intensive_go_basic_workshop/_exercises/thai_id"
+	"github.com/SupTarr/intensive_go_basic_workshop/exercises/thai_id"
 )
 
 type VerifyIdRequest struct {

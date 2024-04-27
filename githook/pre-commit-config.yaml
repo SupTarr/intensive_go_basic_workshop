@@ -21,13 +21,3 @@ repos:
         language: golang
         always_run: true
         stages: [pre-commit]
-  - repo: local
-    hooks:
-      - id: go-unit-tests
-        name: run go test s(go test)
-        language: system
-        entry: bash -c 'exec go test ./...'
-        pass_filenames: false
-        types: [go]
-        files: ^subdir/
-        stages: [pre-commit]
