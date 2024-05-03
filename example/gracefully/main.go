@@ -32,11 +32,11 @@ func main() {
 
 		d := time.Duration(5 * time.Second)
 		fmt.Printf("shutting down int %s ...", d)
-		// We received an interrupt signal, shut down.
+		// We received an interrupt signal, shutting down
 		ctx, cancel := context.WithTimeout(context.Background(), d)
 		defer cancel()
 		if err := srv.Shutdown(ctx); err != nil {
-			// Error from closing listeners, or context timeout:
+			// Error from closing listeners, or context timeout
 			slog.Info("HTTP server Shutdown: " + err.Error())
 		}
 		close(idleConnsClosed)
